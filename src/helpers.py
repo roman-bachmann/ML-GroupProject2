@@ -76,7 +76,7 @@ def pad_sentences(sentences, padding_word="<PAD/>", sequence_length=0):
     return padded_sentences
 
 def accuracy(y_pred, y_true, verbose=False):
-    nb_equal = np.sum(y_pred == y_true)
+    nb_equal = (y_pred == y_true).sum()
     accuracy = nb_equal/len(y_true)
     if verbose:
         print('Accuracy: {}%'.format(accuracy))
