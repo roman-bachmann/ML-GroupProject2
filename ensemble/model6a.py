@@ -20,7 +20,8 @@ from data import create_csv_submission
 
 
 torch.manual_seed(61)
-torch.cuda.manual_seed(61)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed(61)
 # CUDNN has non-deterministic kernels. Uncomment to make deterministic (but slow):
 #torch.backends.cudnn.enabled = False
 
