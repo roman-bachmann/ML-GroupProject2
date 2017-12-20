@@ -54,12 +54,8 @@ print('Vocab size : {}'.format(len(tfidf)))
 
 vector_length = 100
 print("Loading word2vec model...")
-w2v_model = gensim.models.Word2Vec.load(MODEL_PATH + 'twitter_w2v.bin')
+word_vectors = gensim.models.keyedvectors.KeyedVectors.load(MODEL_PATH + 'twitter_word_vectors.bin')
 print("word2vec model loaded!")
-
-# Delete the training model but retain the word vectors:
-word_vectors = w2v_model.wv
-del w2v_model
 
 
 ### Step 3: Convert tweets into sentences of vectors ###
