@@ -1,8 +1,6 @@
 import numpy as np
 import re
 import itertools
-import enchant
-from functools import partial
 
 import torch
 import torch.nn as nn
@@ -10,11 +8,13 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 
 
-
 def clean_str(string):
     """
-    Tokenization/string cleaning for all datasets except for SST.
+    Further tokenization and string cleaning.
     Original taken from https://github.com/yoonkim/CNN_sentence/blob/master/process_data.py
+
+    Keyword arguments:
+    string -- the string to clean
     """
     string = re.sub(r"[^A-Za-z0-9(),!?\'\`]", " ", string)
     string = re.sub(r"\'s", " \'s", string)
@@ -35,6 +35,10 @@ def load_data_and_labels(train_positive_path, train_negative_path):
     """
     Loads tweet data from files, splits the data into words and generates labels.
     Returns split sentences and labels.
+
+    Keyword arguments:
+    train_positive_path -- path to positive training tweets
+    train_negative_path -- path to negative training tweets
     """
     # Load data from files
     positive_examples = list(open(train_positive_path).readlines())
@@ -57,6 +61,9 @@ def load_test_data(test_path):
     """
     Loads test data and splits the data into words.
     Returns split sentences.
+
+    Keyword arguments:
+    test_path -- path to test tweets
     """
     # Load data from files
     x_text_test = list(open(test_path).readlines())
@@ -74,6 +81,12 @@ def pad_sentences(sentences, padding_word="<PAD/>", sequence_length=0):
     """
     Pads all sentences to the same length. The length is defined by the longest sentence.
     Returns padded sentences.
+
+    Keyword arguments:
+    sentences -- all tweets to pad to same length
+    padding_word -- word to pad every sentence to the same length (default: <PAD/>)
+    sequence_length -- Predefine the length that all sentences should have. Leave
+    at 0 to calculate maximum length automatically. (default: 0)
     """
     if sequence_length <= 0:
         sequence_length = max(len(x) for x in sentences)
