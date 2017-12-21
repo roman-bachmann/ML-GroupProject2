@@ -25,6 +25,7 @@ All code was only tested on macOS High Sierra (using only the CPU) and Ubuntu 14
 Please run all files using the following libraries:
 
 - numpy (1.13.3)
+- scipy (0.19.1)
 - scikit-learn (0.19.0)
 - gensim (3.1.0)
 - Cython (0.27.3)
@@ -35,7 +36,7 @@ If you have an NVIDIA GPU, it is recommended to install the following libraries 
 - PyTorch with CUDA enabled
 - PyTorch with CUDNN enabled
 
-## How to get the final submission
+## How to compute the final submission
 
 1. Download the **train\_neg\_full.txt**, **train\_pos\_full.txt** and **test\_data.txt** files from the *epfml17-text* Kaggle competition and place them in the **./twitter-datasets/** folder.
 1. From [Google Drive](https://drive.google.com/file/d/1AnQINAsJhQLWpovh6C5_ptT3RDhr5dkN/view?usp=sharing) (186MB), download the word2vec word vectors and place the unziped files **twitter\_word\_vectors.bin** and **twitter\_word\_vectors.bin.syn0.npy** inside the **./models/** folder. To check the *last modified date* on Google Drive, log in with your google account and at the top right open the "Details" menu in the "More actions" menu.
@@ -45,11 +46,11 @@ If you have an NVIDIA GPU, it is recommended to install the following libraries 
 
 ## Description of ./ensemble/ensemble.py
 
-ensemble.py loads the twitter datasets, the word2vec word vectors and computes the tfidf scores. It then loads all trained models and computes predictions on the train and test data. It uses the predictions of the train data to train a random forest. In the end, it outputs the ensembling of all models as a Kaggle csv submission file.
+ensemble.py loads the twitter datasets, the word2vec word vectors and computes the tf-idf scores. It then loads all trained models and computes predictions on the train and test data. It uses the predictions of the train data to train a random forest. In the end, it outputs the ensembling of all models as a Kaggle csv submission file.
 
-Since ensemble.py does not do any training itself and only loads the pretrained models, it does not need a GPU.
+Since ensemble.py does not do any training of neural networks itself and merely loads the pretrained models, it does not need a GPU to run efficiently.
 
-Approximate runtime on CPU: 15 minutes
+Approximate runtime on CPU: 20 minutes
 
 
 ## Description of ./ensemble/model*.py
@@ -59,9 +60,8 @@ All model*.py files train a model used in the ensemble model. We trained model 2
 - **model1.py**: 2 convolutional layers, kernel size 3, 256 convolutional channels, only with word2vec (seed=1)
 - **model2.py**: 2 convolutional layers, kernel size 5, 256 convolutional channels, only with word2vec (seed=20+i for model2.i)
 - **model3.py**: 2 convolutional layers, kernel size 7, 256 convolutional channels, only with word2vec (seed=3)
-- **model4.py**: 2 convolutional layers, kernel size 3, 256 convolutional channels, with word2vec and tfidf (seed=4)
-- **model5.py**: 2 convolutional layers, kernel size 3, 256 convolutional channels, with word2vec and tfidf (seed=5)
-- **model6.py**: 2 convolutional layers, kernel size 5, 128 convolutional channels, only with word2vec (seed=6)
+- **model4.py**: 2 convolutional layers, kernel size 3, 256 convolutional channels, with word2vec and tf-idf (seed=4)
+- **model5.py**: 2 convolutional layers, kernel size 5, 128 convolutional channels, only with word2vec (seed=5)
 
 **Attention**: CUDNN uses non-deterministic kernels. To make this code deterministic, uncomment *line 29* to disable CUDNN. We used CUDNN to train all our models, because it would take far too long to train them without!
 

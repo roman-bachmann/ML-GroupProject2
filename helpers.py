@@ -50,8 +50,6 @@ def load_data_and_labels(train_positive_path, train_negative_path):
     x_text_train = [clean_str(sent) for sent in x_text_train]
     x_text_train = [s.split(" ") for s in x_text_train]
     # Generate labels
-    #positive_labels = [[0, 1] for _ in positive_examples]
-    #negative_labels = [[1, 0] for _ in negative_examples]
     positive_labels = [1 for _ in positive_examples]
     negative_labels = [0 for _ in negative_examples]
     y = np.concatenate([positive_labels, negative_labels], 0)

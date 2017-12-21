@@ -1,6 +1,6 @@
 ### Final Model 5 ###
-# 2 convolutional layers, kernel size 5, 256 convolutional channels
-# Using word2vec and tfidf
+# 2 convolutional layers, kernel size 3, 128 convolutional channels
+# Only using word2vec
 
 import os, sys
 parentPath = os.path.abspath("..")
@@ -10,7 +10,6 @@ import numpy as np
 
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-from sklearn.feature_extraction.text import TfidfVectorizer
 
 import gensim
 import Cython
@@ -47,13 +46,7 @@ x_text_test = load_test_data(TEST_PATH)
 print("Datasets loaded!")
 
 
-### Step 2: Compute Tf-idf and load word2vec vocabulary ###
-
-print("Computing Tf-idf of twitter dataset...")
-vectorizer = TfidfVectorizer(analyzer=lambda x: x, min_df=1)
-matrix = vectorizer.fit_transform([x for x in x_text_train + x_text_test])
-tfidf = dict(zip(vectorizer.get_feature_names(), vectorizer.idf_))
-print('Vocab size : {}'.format(len(tfidf)))
+### Step 2: Load word2vec vocabulary ###
 
 vector_length = 100
 print("Loading word2vec model...")
@@ -79,28 +72,6 @@ del x_text_test
 # Split into training and validation data
 x_train, x_val, y_train, y_val = train_test_split(x_text_train_pad, y_train_full, test_size=0.01, random_state=42)
 
-def get_tweets_tensor(tweets, indices=[]):
-    '''Mapping every word to a vector from word2vec
-    Padding words are mapped to zero
-    Leave indices empty to map every tweet in tweets
-    '''
-
-    nb_tweets = len(tweets) if len(indices)==0 else len(indices)
-    tweets_vec = np.zeros((nb_tweets, len(tweets[0]), vector_length), dtype=np.float32)
-
-    if indices == []:
-        for idx_t, tweet in enumerate(tweets):
-            for idx_w, word in enumerate(tweet):
-                if word != '<PAD/>':
-                    tweets_vec[idx_t, idx_w] = word_vectors.wv[word] * tfidf[word]
-    else:
-        for idx_t, orig_idx in enumerate(indices):
-            for idx_w, word in enumerate(tweets[orig_idx]):
-                if word != '<PAD/>':
-                    tweets_vec[idx_t, idx_w] = word_vectors.wv[word] * tfidf[word]
-
-    return torch.from_numpy(tweets_vec)
-
 
 ### Step 4: Classification ###
 print("Setting up classification...")
@@ -120,7 +91,7 @@ N = len(train_loader.dataset.data_list)     # Number of tweets (eg 200000)
 S = len(train_loader.dataset.data_list[0])  # Number of words in one sentence (eg 50)
 V = vector_length                           # Length of word vectors (eg 100)
 K = 5                                       # Kernel width (K*V)
-C = 256                                     # Number of convolutional filters
+C = 128                                     # Number of convolutional filters
 F = 2                                       # Number of output neurons in fully connected layer
 
 cnn = CNN(S, V, K, C, F)
@@ -139,7 +110,7 @@ print("Starting training...")
 for epoch in range(num_epochs):  # loop over the dataset multiple times
     for i, batch_indices in enumerate(train_loader.batch_sampler):   # iterate over mini-batches
         # Converting tweets to vectors and storing it in a variable
-        sentences = get_tweets_tensor_tfidf(train_loader.dataset.data_list, word_vectors, vector_length, tfidf, batch_indices)
+        sentences = get_tweets_tensor(train_loader.dataset.data_list, word_vectors, vector_length, batch_indices)
         if torch.cuda.is_available():
             sentences = sentences.cuda()
         x = Variable(sentences)
@@ -169,7 +140,7 @@ accuracy = 0
 nb_steps = 0
 step_size = 100 # Calculate in steps, since GPU memory might be too small for whole testset
 for i in range(0, len(x_val), step_size):
-    val_output = cnn(Variable(get_tweets_tensor_tfidf(x_val[i:i+step_size], word_vectors, vector_length, tfidf).cuda()))
+    val_output = cnn(Variable(get_tweets_tensor(x_val[i:i+step_size], word_vectors, vector_length).cuda()))
     y_val_pred = torch.max(val_output.cpu(), 1)[1].data.numpy().squeeze()
     accuracy += accuracy_score(y_val[i:i+step_size], y_val_pred)
     nb_steps += 1
@@ -181,7 +152,7 @@ print('Validation accuracy:', accuracy/nb_steps)
 cnn.cpu()
 torch.save(cnn, './ensemble_models/model5.pth')
 
-test_output = cnn(Variable(get_tweets_tensor_tfidf(x_text_test_pad, word_vectors, vector_length, tfidf)))
+test_output = cnn(Variable(get_tweets_tensor(x_text_test_pad, word_vectors, vector_length)))
 y_pred = torch.max(test_output, 1)[1].data.numpy().squeeze()
 y_pred[y_pred == 0] = -1
 ids = np.arange(len(y_pred)+1)[1:]

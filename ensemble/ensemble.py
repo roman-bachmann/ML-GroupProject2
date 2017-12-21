@@ -124,22 +124,14 @@ print('Predictions computed!')
 ### Model 5 ###
 print('Loading model 5 and computing predictions...')
 model5 = torch.load('./ensemble_models/model5.pth')
-y_train_pred5 = get_predictions_tfidf(model5, x_text_train_pad, word_vectors, vector_length, tfidf)
-y_test_pred5 = get_predictions_tfidf(model5, x_text_test_pad, word_vectors, vector_length, tfidf)
+y_train_pred5 = get_predictions(model5, x_text_train_pad, word_vectors, vector_length)
+y_test_pred5 = get_predictions(model5, x_text_test_pad, word_vectors, vector_length)
 del model5
-print('Predictions computed!')
-
-### Model 6 ###
-print('Loading model 6 and computing predictions...')
-model6 = torch.load('./ensemble_models/model6.pth')
-y_train_pred6 = get_predictions(model6, x_text_train_pad, word_vectors, vector_length)
-y_test_pred6 = get_predictions(model6, x_text_test_pad, word_vectors, vector_length)
-del model6
 print('Predictions computed!')
 
 
 ### Ensemble ###
-clf = RandomForestClassifier(oob_score=True, criterion='entropy', random_state=42)
+clf = RandomForestClassifier(oob_score=False, criterion='entropy', random_state=42)
 param_grid = {
     'n_estimators': sp_randint(10, 100),
     'max_depth': sp_randint(10, 90),
@@ -149,15 +141,14 @@ param_grid = {
 rf_grid = RandomizedSearchCV(estimator=clf, param_distributions=param_grid, n_iter=100, cv=5, random_state=42)
 
 print('Training random forest on all predictions...')
-ensemble_train = np.vstack([y_train_pred1, y_train_pred2, y_train_pred3, y_train_pred4, y_train_pred6]).T
+ensemble_train = np.vstack([y_train_pred1, y_train_pred2, y_train_pred3, y_train_pred4, y_train_pred5]).T
 rf_grid.fit(ensemble_train, y_train_full)
 
 print('Best hyperparameters:', rf_grid.best_params_)
 best_rf = rf_grid.best_estimator_
-print('Best random forest oob score:', best_rf.oob_score_)
 print('Feature importances:', best_rf.feature_importances_)
 
-ensemble_test = np.vstack([y_test_pred1, y_test_pred2, y_test_pred3, y_test_pred4, y_test_pred6]).T
+ensemble_test = np.vstack([y_test_pred1, y_test_pred2, y_test_pred3, y_test_pred4, y_test_pred5]).T
 final_preds = best_rf.predict(ensemble_test)
 
 final_preds[final_preds == 0] = -1

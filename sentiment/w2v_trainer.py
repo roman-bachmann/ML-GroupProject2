@@ -38,5 +38,5 @@ w2v_model = gensim.models.Word2Vec(x_text_train + x_text_test, min_count=1, work
 word_vectors = w2v_model.wv
 del w2v_model
 
-word_vectors.save(MODEL_PATH + 'twitter_word_vectorsx.bin')
+word_vectors.save(MODEL_PATH + 'twitter_w2v_word_vectors.bin')
 print("Training done. Model saved.")
