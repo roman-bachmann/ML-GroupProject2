@@ -142,6 +142,7 @@ rf_grid.fit(ensemble_train, y_train_full)
 print('Best hyperparameters:', rf_grid.best_params_)
 best_rf = rf_grid.best_estimator_
 print('Best random forest oob score:', best_rf.oob_score_)
+print('Feature importances:', best_rf.feature_importances_)
 
 ensemble_test = np.vstack([y_test_pred1, y_test_pred2, y_test_pred3, y_test_pred4, y_test_pred5]).T
 final_preds = best_rf.predict(ensemble_test)
