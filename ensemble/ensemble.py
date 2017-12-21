@@ -19,7 +19,6 @@ from helpers import *
 from data import create_csv_submission
 
 torch.manual_seed(1)
-#torch.nn.Module.dump_patches = True
 
 
 ### Step 1: Load the tweets ###
@@ -27,8 +26,8 @@ torch.manual_seed(1)
 DATA_PATH = '../twitter-datasets/'
 MODEL_PATH = '../models/'
 
-TRAIN_NEG_PATH = os.path.join(DATA_PATH, 'train_neg_full.txt') # 2'500'000 negative tweets
-TRAIN_POS_PATH = os.path.join(DATA_PATH, 'train_pos_full.txt') # 2'500'000 positive tweets
+TRAIN_NEG_PATH = os.path.join(DATA_PATH, 'train_neg_full.txt') # 1'250'000 negative tweets
+TRAIN_POS_PATH = os.path.join(DATA_PATH, 'train_pos_full.txt') # 1'250'000 positive tweets
 TEST_PATH = os.path.join(DATA_PATH, 'test_data.txt')
 
 print("Loading datasets...")
