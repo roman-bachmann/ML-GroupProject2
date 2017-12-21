@@ -1,6 +1,11 @@
 ### Sentiment Model 2 ###
+# 2 convolutional layers, kernel size 3, 265 convolutional channels
+# Only using word2vec
 
-import os
+import os, sys
+parentPath = os.path.abspath("..")
+if parentPath not in sys.path:
+    sys.path.insert(0, parentPath)
 import numpy as np
 
 from sklearn.model_selection import train_test_split

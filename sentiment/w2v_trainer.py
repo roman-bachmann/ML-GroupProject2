@@ -1,4 +1,9 @@
-import os
+### Produces the word2vec word vectors from the twitter dataset. ###
+
+import os, sys
+parentPath = os.path.abspath("..")
+if parentPath not in sys.path:
+    sys.path.insert(0, parentPath)
 import numpy as np
 import gensim
 import Cython
@@ -33,5 +38,5 @@ w2v_model = gensim.models.Word2Vec(x_text_train + x_text_test, min_count=1, work
 word_vectors = w2v_model.wv
 del w2v_model
 
-word_vectors.save(MODEL_PATH + 'twitter_word_vectors.bin')
+word_vectors.save(MODEL_PATH + 'twitter_word_vectorsx.bin')
 print("Training done. Model saved.")

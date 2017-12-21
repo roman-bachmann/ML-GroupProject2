@@ -1,6 +1,11 @@
 ### Final Model 5 ###
+# 2 convolutional layers, kernel size 5, 256 convolutional channels
+# Using word2vec and tfidf
 
-import os
+import os, sys
+parentPath = os.path.abspath("..")
+if parentPath not in sys.path:
+    sys.path.insert(0, parentPath)
 import numpy as np
 
 from sklearn.model_selection import train_test_split
@@ -32,8 +37,6 @@ if torch.cuda.is_available():
 DATA_PATH = '../twitter-datasets/'
 MODEL_PATH = '../models/'
 
-#TRAIN_NEG_PATH = os.path.join(DATA_PATH, 'train_neg.txt') # 100'000 negative tweets
-#TRAIN_POS_PATH = os.path.join(DATA_PATH, 'train_pos.txt') # 100'000 positive tweets
 TRAIN_NEG_PATH = os.path.join(DATA_PATH, 'train_neg_full.txt') # 1'250'000 negative tweets
 TRAIN_POS_PATH = os.path.join(DATA_PATH, 'train_pos_full.txt') # 1'250'000 positive tweets
 TEST_PATH = os.path.join(DATA_PATH, 'test_data.txt')
