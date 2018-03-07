@@ -22,8 +22,9 @@
 
 All code was only tested on macOS High Sierra (using only the CPU) and Ubuntu 14.04 (using a NVIDIA GTX 970).
 
-Please run all files using the following libraries:
+Please run all files using the following dependencies:
 
+- Python 3.5.4
 - numpy (1.13.3)
 - scipy (0.19.1)
 - scikit-learn (0.19.0)
